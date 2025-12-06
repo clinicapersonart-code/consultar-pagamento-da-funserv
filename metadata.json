@@ -1,0 +1,5 @@
+{
+  "name": "NeuroAnalyze - Faturamento Médico",
+  "description": "Plataforma inteligente para análise de demonstrativos de pagamento hospitalar (FUNSERV), identificando pagamentos e glosas automaticamente via PDF.",
+  "requestFramePermissions": []
+}
