@@ -86,19 +86,16 @@ function App() {
       const resultsMap = new Map<string, PatientSummary>();
 
       // Initialize map with existing data to allow appending new files instead of overwriting
-      // If you prefer overwriting, remove this block or create a separate 'Append' vs 'Replace' logic
       data.forEach(item => resultsMap.set(item.id, { ...item }));
-const mergeData = (items: PatientSummary[]) => {
+
+      const mergeData = (items: PatientSummary[]) => {
         items.forEach(item => {
           if (resultsMap.has(item.id)) {
             const existing = resultsMap.get(item.id)!;
             existing.totalProcedures += item.totalProcedures;
             existing.paidProcedures += item.paidProcedures;
             existing.disallowedProcedures += item.disallowedProcedures;
-            
-            // ESTA LINHA É ESSENCIAL:
             existing.totalProcessedValue += item.totalProcessedValue;
-            
             existing.totalPaidValue += item.totalPaidValue;
             existing.totalDisallowedValue += item.totalDisallowedValue;
           } else {
@@ -160,6 +157,7 @@ const mergeData = (items: PatientSummary[]) => {
         name: pro.name,
         patientCount: 0,
         totalProcedures: 0,
+        totalProcessedValue: 0,
         totalPaidValue: 0,
         totalDisallowedValue: 0
       });
@@ -172,6 +170,7 @@ const mergeData = (items: PatientSummary[]) => {
         const proStat = statsMap.get(assignedProId)!;
         proStat.patientCount += 1;
         proStat.totalProcedures += patient.totalProcedures;
+        proStat.totalProcessedValue += patient.totalProcessedValue;
         proStat.totalPaidValue += patient.totalPaidValue;
         proStat.totalDisallowedValue += patient.totalDisallowedValue;
       }
@@ -198,7 +197,6 @@ const mergeData = (items: PatientSummary[]) => {
     if (window.confirm("Tem certeza que deseja limpar todos os dados da análise? Isso não apaga os profissionais cadastrados.")) {
       setData([]);
       setError(null);
-      // Note: We deliberately do NOT reset assignments here so they persist for next analysis
     }
   };
 

@@ -12,13 +12,13 @@ const formatCurrency = (val: number) =>
 const SummaryCards: React.FC<SummaryCardsProps> = ({ data }) => {
   const totalPaid = data.reduce((acc, curr) => acc + curr.totalPaidValue, 0);
   const totalGlosa = data.reduce((acc, curr) => acc + curr.totalDisallowedValue, 0);
-  // O Valor Processado (Bruto) é matematicamente a soma do que foi Pago (Líquido) + o que foi Glosado (Descontado).
-  const totalProcessed = totalPaid + totalGlosa;
+  // Usa o campo calculado na extração para garantir consistência
+  const totalProcessed = data.reduce((acc, curr) => acc + curr.totalProcessedValue, 0);
   const totalPatients = data.length;
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-      {/* 1. Total Processado (Bruto) - NOVO */}
+      {/* 1. Total Processado (Bruto) */}
       <div className="bg-white p-6 rounded-lg shadow-sm border border-slate-200">
         <div className="flex items-center justify-between mb-4">
           <div className="bg-slate-100 p-2 rounded-lg">

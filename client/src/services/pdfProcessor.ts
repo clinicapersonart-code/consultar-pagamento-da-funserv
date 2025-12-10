@@ -145,6 +145,7 @@ const aggregateData = (rows: ExtractedRow[]): PatientSummary[] => {
         totalProcedures: 0,
         paidProcedures: 0,
         disallowedProcedures: 0,
+        totalProcessedValue: 0,
         totalPaidValue: 0,
         totalDisallowedValue: 0
       });
@@ -152,6 +153,10 @@ const aggregateData = (rows: ExtractedRow[]): PatientSummary[] => {
 
     const patient = map.get(row.beneficiaryCode)!;
     patient.totalProcedures += 1;
+    
+    // CORREÇÃO CRÍTICA: Somar o valor processado da linha (que é Pago + Glosa)
+    // Se o paidVal e glosaVal foram extraídos corretamente, o Processado é a soma.
+    patient.totalProcessedValue += (paidVal + glosaVal);
     
     if (paidVal > 0) {
       patient.paidProcedures += 1;

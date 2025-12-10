@@ -4,7 +4,7 @@ export interface PatientSummary {
   totalProcedures: number;
   paidProcedures: number;
   disallowedProcedures: number; // Glosas
-  totalProcessedValue: number; // <--- NOVO CAMPO ADICIONADO
+  totalProcessedValue: number; // Valor Bruto (Pago + Glosa)
   totalPaidValue: number;
   totalDisallowedValue: number;
 }
@@ -35,6 +35,7 @@ export interface ProfessionalSummary {
   name: string;
   patientCount: number;
   totalProcedures: number;
+  totalProcessedValue: number; // <--- ADICIONADO PARA CONSISTÊNCIA
   totalPaidValue: number;
   totalDisallowedValue: number;
 }
