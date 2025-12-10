@@ -7,10 +7,12 @@ export const exportToExcel = (data: PatientSummary[]) => {
     'Código': item.id,
     'Paciente': item.name,
     'Total Atendimentos': item.totalProcedures,
-    'Atendimentos Pagos': item.paidProcedures,
-    'Atendimentos Glosados': item.disallowedProcedures,
-    'Valor Total Pago (R$)': item.totalPaidValue,
-    'Valor Total Glosado (R$)': item.totalDisallowedValue * -1, // Showing negative for financial clarity in Excel
+    // Valor Processado (Bruto) = Líquido + Glosa
+    'Valor Processado (R$)': item.totalPaidValue + item.totalDisallowedValue,
+    // Glosa (Negativo)
+    'Valor Glosado (R$)': item.totalDisallowedValue * -1, 
+    // Líquido (Já é o totalPaidValue)
+    'Valor Líquido (R$)': item.totalPaidValue
   }));
 
   // Create workbook and worksheet
@@ -21,11 +23,10 @@ export const exportToExcel = (data: PatientSummary[]) => {
   const wscols = [
     { wch: 15 }, // Code
     { wch: 40 }, // Name
-    { wch: 20 }, // Total
-    { wch: 20 }, // Paid
+    { wch: 20 }, // Total Proc
+    { wch: 20 }, // Processado
     { wch: 20 }, // Glosa
-    { wch: 20 }, // Val Paid
-    { wch: 20 }, // Val Glosa
+    { wch: 20 }, // Líquido
   ];
   worksheet['!cols'] = wscols;
 

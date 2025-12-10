@@ -26,7 +26,7 @@ const DataTable: React.FC<DataTableProps> = ({ data, professionals, assignments,
               <th className="px-6 py-3 font-semibold">Paciente</th>
               <th className="px-6 py-3 font-semibold">Profissional Responsável</th>
               <th className="px-6 py-3 font-semibold text-center">Procedimentos</th>
-              <th className="px-6 py-3 font-semibold text-right">Pago</th>
+              <th className="px-6 py-3 font-semibold text-right">V. Processado</th>
               <th className="px-6 py-3 font-semibold text-right">Glosado</th>
               <th className="px-6 py-3 font-semibold text-right">Valor Líquido</th>
             </tr>
@@ -67,11 +67,9 @@ const DataTable: React.FC<DataTableProps> = ({ data, professionals, assignments,
                   </span>
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <div className="text-emerald-600 font-medium">
-                    {formatCurrency(patient.totalPaidValue)}
-                  </div>
-                  <div className="text-xs text-slate-400">
-                    {patient.paidProcedures} itens
+                  <div className="text-slate-600 font-medium">
+                    {/* Valor Processado é a soma do Líquido + Glosa */}
+                    {formatCurrency(patient.totalPaidValue + patient.totalDisallowedValue)}
                   </div>
                 </td>
                 <td className="px-6 py-4 text-right">
@@ -84,8 +82,9 @@ const DataTable: React.FC<DataTableProps> = ({ data, professionals, assignments,
                     </div>
                   )}
                 </td>
-                <td className="px-6 py-4 text-right font-bold text-slate-800">
-                   {formatCurrency(patient.totalPaidValue - patient.totalDisallowedValue)}
+                <td className="px-6 py-4 text-right font-bold text-emerald-700">
+                   {/* totalPaidValue já é o Valor Líquido extraído do PDF (última coluna) */}
+                   {formatCurrency(patient.totalPaidValue)}
                 </td>
               </tr>
             ))}

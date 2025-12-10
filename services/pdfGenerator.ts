@@ -37,7 +37,18 @@ export const generatePDF = (
   // --- Summary Section ---
   const totalPaid = data.reduce((acc: number, curr: any) => acc + curr.totalPaidValue, 0);
   const totalGlosa = data.reduce((acc: number, curr: any) => acc + curr.totalDisallowedValue, 0);
-  const totalNet = totalPaid - totalGlosa;
+  // NOTE: totalPaidValue is already the Net Paid. totalGlosa is the Disallowed amount.
+  // So Net Total is just totalPaid. 
+  // Wait, in the summary box we usually show:
+  // "Recebido" (The money that came in) = totalPaid
+  // "Glosado" (The money lost) = totalGlosa
+  // The "Líquido" box in the PDF was calculating Paid - Glosa, which was wrong.
+  // Let's adjust the boxes:
+  // Box 1: Processado (Bruto) = Paid + Glosa
+  // Box 2: Glosa
+  // Box 3: Líquido (Recebido) = Paid
+
+  const totalProcessed = totalPaid + totalGlosa;
   
   doc.setTextColor(0, 0, 0);
   doc.setFontSize(14);
@@ -47,16 +58,16 @@ export const generatePDF = (
   // Summary Boxes
   const startY = 60;
   
-  // Box 1: Recebido
-  doc.setFillColor(240, 253, 244); 
-  doc.setDrawColor(22, 163, 74);
+  // Box 1: Processado (Bruto)
+  doc.setFillColor(241, 245, 249); // Slate-100
+  doc.setDrawColor(100, 116, 139);
   doc.roundedRect(14, startY, 55, 25, 3, 3, 'FD');
   doc.setFontSize(10);
-  doc.setTextColor(22, 163, 74);
-  doc.text("Total Recebido", 19, startY + 8);
+  doc.setTextColor(71, 85, 105);
+  doc.text("Total Processado", 19, startY + 8);
   doc.setFontSize(12);
   doc.setFont("helvetica", "bold");
-  doc.text(formatCurrency(totalPaid), 19, startY + 18);
+  doc.text(formatCurrency(totalProcessed), 19, startY + 18);
 
   // Box 2: Glosa
   doc.setFillColor(254, 242, 242); 
@@ -69,16 +80,16 @@ export const generatePDF = (
   doc.setFont("helvetica", "bold");
   doc.text(formatCurrency(totalGlosa), 79, startY + 18);
 
-  // Box 3: Líquido
-  doc.setFillColor(239, 246, 255); 
-  doc.setDrawColor(37, 99, 235);
+  // Box 3: Líquido (Realmente Recebido)
+  doc.setFillColor(240, 253, 244); 
+  doc.setDrawColor(22, 163, 74);
   doc.roundedRect(134, startY, 55, 25, 3, 3, 'FD');
   doc.setFontSize(10);
-  doc.setTextColor(37, 99, 235);
-  doc.text("Valor Líquido", 139, startY + 8);
+  doc.setTextColor(22, 163, 74);
+  doc.text("Valor Líquido Recebido", 139, startY + 8);
   doc.setFontSize(12);
   doc.setFont("helvetica", "bold");
-  doc.text(formatCurrency(totalNet), 139, startY + 18);
+  doc.text(formatCurrency(totalPaid), 139, startY + 18);
 
   // --- Table ---
   let tableHead = [];
@@ -86,14 +97,15 @@ export const generatePDF = (
   let colStyles = {};
 
   if (mode === 'patients') {
-    tableHead = [['Cód.', 'Paciente', 'Qtd.', 'Pago', 'Glosa', 'Líquido']];
+    // Columns: Cód, Paciente, Qtd, Processado, Glosa, Líquido
+    tableHead = [['Cód.', 'Paciente', 'Qtd.', 'Processado', 'Glosa', 'Líquido']];
     tableBody = (data as PatientSummary[]).map(item => [
       item.id,
       item.name,
       item.totalProcedures,
-      formatCurrency(item.totalPaidValue),
+      formatCurrency(item.totalPaidValue + item.totalDisallowedValue), // Processado
       item.totalDisallowedValue > 0 ? `-${formatCurrency(item.totalDisallowedValue)}` : '-',
-      formatCurrency(item.totalPaidValue - item.totalDisallowedValue)
+      formatCurrency(item.totalPaidValue) // Líquido
     ]);
     colStyles = {
       0: { cellWidth: 20 },
@@ -105,14 +117,14 @@ export const generatePDF = (
     };
   } else {
     // Professional Mode
-    tableHead = [['Profissional', 'Pacientes', 'Proc.', 'Pago', 'Glosa', 'Líquido']];
+    tableHead = [['Profissional', 'Pacientes', 'Proc.', 'Processado', 'Glosa', 'Líquido']];
     tableBody = (data as ProfessionalSummary[]).map(item => [
       item.name,
       item.patientCount,
       item.totalProcedures,
-      formatCurrency(item.totalPaidValue),
+      formatCurrency(item.totalPaidValue + item.totalDisallowedValue), // Processado
       item.totalDisallowedValue > 0 ? `-${formatCurrency(item.totalDisallowedValue)}` : '-',
-      formatCurrency(item.totalPaidValue - item.totalDisallowedValue)
+      formatCurrency(item.totalPaidValue) // Líquido
     ]);
     colStyles = {
       0: { cellWidth: 'auto', fontStyle: 'bold' },

@@ -25,7 +25,7 @@ const ProfessionalTable: React.FC<ProfessionalTableProps> = ({ data }) => {
               <th className="px-6 py-3 font-semibold">Profissional</th>
               <th className="px-6 py-3 font-semibold text-center">Pacientes Vinculados</th>
               <th className="px-6 py-3 font-semibold text-center">Total Procedimentos</th>
-              <th className="px-6 py-3 font-semibold text-right">Total Pago</th>
+              <th className="px-6 py-3 font-semibold text-right">V. Processado</th>
               <th className="px-6 py-3 font-semibold text-right">Total Glosado</th>
               <th className="px-6 py-3 font-semibold text-right">Valor Líquido</th>
             </tr>
@@ -47,8 +47,8 @@ const ProfessionalTable: React.FC<ProfessionalTableProps> = ({ data }) => {
                   </span>
                 </td>
                 <td className="px-6 py-4 text-right">
-                  <div className="text-emerald-600 font-bold">
-                    {formatCurrency(pro.totalPaidValue)}
+                  <div className="text-slate-600 font-medium">
+                    {formatCurrency(pro.totalPaidValue + pro.totalDisallowedValue)}
                   </div>
                 </td>
                 <td className="px-6 py-4 text-right">
@@ -56,8 +56,8 @@ const ProfessionalTable: React.FC<ProfessionalTableProps> = ({ data }) => {
                     {pro.totalDisallowedValue > 0 ? `-${formatCurrency(pro.totalDisallowedValue)}` : '-'}
                   </div>
                 </td>
-                <td className="px-6 py-4 text-right font-bold text-slate-800 text-base">
-                   {formatCurrency(pro.totalPaidValue - pro.totalDisallowedValue)}
+                <td className="px-6 py-4 text-right font-bold text-emerald-700 text-base">
+                   {formatCurrency(pro.totalPaidValue)}
                 </td>
               </tr>
             ))}
